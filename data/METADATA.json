@@ -1,0 +1,136 @@
+{
+  "title": "DPE × Enedis - Analyse énergétique Paris & Hauts-de-Seine",
+  "description": "Fusion de données DPE (Diagnostic Performance Énergétique) et consommations électriques Enedis pour analyser l'efficacité énergétique des logements. Quantifie l'impact des classes DPE (A-G) sur les consommations réelles et mesure l'écart entre estimations théoriques et mesures réelles.",
+  "version": "1.0",
+  "temporal_coverage": {
+    "start": "2018-01-01",
+    "end": "2024-12-31"
+  },
+  "spatial_coverage": [
+    "Paris",
+    "Hauts-de-Seine"
+  ],
+  "keywords": [
+    "DPE",
+    "Enedis",
+    "Consommation électrique",
+    "Efficacité énergétique",
+    "Performance énergétique",
+    "Rénovation",
+    "Transition écologique"
+  ],
+  "datasets": [
+    {
+      "file": "dpe_enedis_joined.csv",
+      "format": "CSV",
+      "description": "Données finales jointes: 2,310 lignes (338 adresses uniques × 7 années)",
+      "size_mb": "~2-5",
+      "rows": 2310,
+      "columns": [
+        "adresse",
+        "ban_id",
+        "annee",
+        "conso_kwh",
+        "classe_dpe_modale",
+        "nb_dpe",
+        "surface_med",
+        "pct_elec_chauffage",
+        "conso_reelle_par_m2",
+        "conso_estimee_med",
+        "ecart_estime_vs_reel",
+        "ecart_pct",
+        "lat",
+        "lon"
+      ]
+    },
+    {
+      "file": "gains_par_classe.csv",
+      "format": "CSV",
+      "description": "Gains de rénovation estimés entre classes DPE adjacentes (en kWh/m²/an et €)",
+      "rows": 6
+    },
+    {
+      "file": "stats_descriptives_par_classe.csv",
+      "format": "CSV",
+      "description": "Statistiques descriptives (min, max, médiane, écart-type) par classe DPE"
+    },
+    {
+      "file": "variabilite_comportements.csv",
+      "format": "CSV",
+      "description": "Variabilité résiduelle dues aux comportements et modes de vie (écart-type, CV)"
+    },
+    {
+      "file": "gains_par_usage.csv",
+      "format": "CSV",
+      "description": "Répartition des gains par usage énergétique (chauffage, ECS, éclairage, autres)",
+      "breakdown": "Utilise hypothèse répartition 3CL: chauffage 70%, ECS 15%, éclairage 10%, autres 5%"
+    },
+    {
+      "file": "model_coefficients.csv",
+      "format": "CSV",
+      "description": "Coefficients du modèle prédictif (régression linéaire consommation réelle)"
+    },
+    {
+      "file": "rapport_analyse.txt",
+      "format": "TXT",
+      "description": "Rapport synthétique d'analyse complet avec interprétations"
+    }
+  ],
+  "sources": [
+    {
+      "name": "API ADEME DPE",
+      "url": "https://data.ademe.fr/datasets/dpe03existant",
+      "description": "Diagnostic de Performance Énergétique - Logements existants (post 2021)",
+      "volume": "727 DPE filtrés (75, 92)"
+    },
+    {
+      "name": "Enedis Consommation",
+      "url": "https://data.enedis.fr/explore/dataset/consommation-annuelle-residentielle-par-adresse/",
+      "description": "Consommation électrique annuelle par adresse (≥10 logements)",
+      "volume": "522,907 adresses"
+    },
+    {
+      "name": "BAN Géocodage",
+      "url": "https://adresse.data.gouv.fr/api",
+      "description": "Base Adresse Nationale - Normalisation et géocodage adresses",
+      "volume": "77,069 adresses uniques"
+    }
+  ],
+  "methodology": {
+    "steps": [
+      "1. Chargement et nettoyage Enedis (522k adresses)",
+      "2. Téléchargement et normalisation DPE via API ADEME",
+      "3. Normalisation adresses (majuscules, accents)",
+      "4. Géocodage BAN par chunks (5k adresses) avec retry",
+      "5. Jointure sur ban_id (inner join)",
+      "6. Agrégation DPE par adresse (classe modale)",
+      "7. Calcul métriques: conso/m², écarts %, gains",
+      "8. Modélisation ML: régression linéaire prédiction consommation"
+    ],
+    "key_metrics": {
+      "conso_reelle_par_m2": "Consommation réelle Enedis normalisée par surface",
+      "ecart_pct": "(Conso estimée DPE - Conso réelle Enedis) / Conso réelle * 100",
+      "classe_dpe_modale": "Classe DPE la plus fréquente à l'adresse"
+    }
+  },
+  "limitations": [
+    "Couverture faible (0.4% des adresses Enedis) - DPE obligatoire seulement vente/location",
+    "Électricité uniquement - Chauffage gaz/fioul non inclus",
+    "Données ≥10 logements par adresse - Excluent maisons individuelles",
+    "Agrégation par adresse - Surface médiane approximation",
+    "DPE conventionnels 3CL - Pas d'ajustement météo"
+  ],
+  "recommendations": [
+    "Élargir zone géographique (Île-de-France entière) pour plus de données",
+    "Intégrer données gaz (GRDF) pour chauffage complet",
+    "Ajouter données météo historique pour normaliser comparaisons",
+    "Utiliser modèles ML avancés (gradient boosting, causal inference)",
+    "Implémenter suivi temporel logements post-rénovation"
+  ],
+  "license": "CC-BY-4.0",
+  "contact": {
+    "email": "data@example.com",
+    "organization": "Hackathon Energy Data"
+  },
+  "last_updated": "2026-04-08"
+}

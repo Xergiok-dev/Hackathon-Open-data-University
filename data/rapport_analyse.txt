@@ -1,0 +1,111 @@
+
+======================================================================
+RAPPORT D'ANALYSE - Pipeline DPE × Enedis
+Efficacité énergétique Paris & Hauts-de-Seine
+======================================================================
+
+📊 RÉSUMÉ EXÉCUTIF
+----------------------------------------------------------------------
+
+Couverture:
+  • Adresses Enedis analysées: 2,310 lignes
+  • Adresses uniques avec DPE: 335 adresses
+  • Période: 2018-2024
+  • Taux de couverture: 59.9%
+
+🎯 QUESTION 1: GAINS DE RÉNOVATION
+----------------------------------------------------------------------
+
+Gains estimés par transition de classe (en kWh/m²/an):
+(Voir fichier data/gains_par_classe.csv pour détails)
+
+💡 Interprétation:
+  • Chaque classe représente ~15-25% de gain potentiel
+  • Valorisation euros (0.20€/kWh): ~€/an pour logement 65m²
+  • Potentiel de réduction 2030: Rénovation F→E (plus coûteux)
+
+❓ QUESTION 2: ÉCART DPE vs RÉALITÉ
+----------------------------------------------------------------------
+
+Écart moyen: 291.5% (DPE sous-estime)
+
+Interprétation:
+  • DPE sous-estime. Logements consomment plus qu'anticipé.
+  
+Variabilité résiduelle (comportements + météo + autres):
+  • Écart-type moyen: 366.6%
+  • Coefficient variation: 125.8%
+  
+  → Facteurs non-DPE expliquent ~2422% de la variabilité
+
+📈 ANALYSE PAR CLASSE DPE
+----------------------------------------------------------------------
+
+Classe | Consommation | Écart DPE | Logements | Variabilité
+      | (kWh/m²/an) | Moy (%)   | (n)       | (std %)
+
+    A   |         N/A         |   -64.0   |     7     |     3.1    
+    B   |         N/A         |   404.0   |    12     |    434.6   
+    C   |         N/A         |   211.0   |    331    |    336.6   
+    D   |         N/A         |   223.0   |    593    |    301.7   
+    E   |         N/A         |   307.3   |    746    |    347.3   
+    F   |         N/A         |   412.3   |    373    |    430.1   
+    G   |         N/A         |   354.9   |    182    |    453.1   
+
+🔮 MODÈLE PRÉDICTIF
+----------------------------------------------------------------------
+
+Performance:
+  • R² Score: 0.492 (explique 49.2% de la variance)
+  • RMSE: 44.12 kWh/m²/an
+  • Observations: 2244
+
+Features importantes:
+  1. Classe DPE: Impact majeur (+1.82 par niveau)
+  2. Type chauffage (% électricité): 0.4827
+  3. Surface: -1.1461
+  4. Nb DPE adresse: -0.6358
+
+💡 Gains Rénovation (estimé):
+  E → D: +-1.8 kWh/m²/an = ~-24€/an (65m²)
+
+⚠️ LIMITATIONS
+----------------------------------------------------------------------
+
+1. Couverture faible (0.4%):
+   - DPE obligatoire seulement vente/location
+   - Biais vers immeubles multi-logements (≥10 logements)
+   
+2. Only électricité:
+   - Chauffage gaz + fioul non inclus
+   - Sous-estime gain rénovation pour chauffage centralisé
+   
+3. Données 2018-2024:
+   - Pas de séries historiques longues
+   - Météo normalisée pas disponible
+   
+4. Agrégation par adresse:
+   - Surface médiane approximation
+   - Suppose homogénéité logements même adresse
+
+🚀 RECOMMANDATIONS
+----------------------------------------------------------------------
+
+1. Court terme:
+   ✓ Augmenter couverture: Élargir zone géographique (IDF entière)
+   ✓ Ajouter chauffage gaz (GRDF data)
+   ✓ Enrichir: Météo historique, revenus ménages
+
+2. Moyen terme:
+   ✓ Modèles ML avancés (gradient boosting, neural nets)
+   ✓ Analyse causale: Quel % gain dû à rénovation vs météo?
+   ✓ Suivi temporel: Tracking logements pré/post-rénovation
+
+3. Long terme:
+   ✓ Plateform prédiction: "Combien j'économise si je rénove?"
+   ✓ Analyse ROI rénovation par quartier
+   ✓ Intégration données SIG (viabilité financière)
+
+======================================================================
+Rapport généré: 2026-04-08 13:49:27
+======================================================================
