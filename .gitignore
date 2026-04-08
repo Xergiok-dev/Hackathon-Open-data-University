@@ -23,9 +23,17 @@ wheels/
 .installed.cfg
 *.egg
 
-# Data files (trop gros)
-data/*.csv
-data/*.json
+# Data files - INCLURE les résultats générés, EXCLURE juste les sources brutes
+data/enedis_conso.csv
+data/dpe_75_92.csv
+!data/dpe_enedis_joined.csv
+!data/gains_par_classe.csv
+!data/gains_par_usage.csv
+!data/stats_descriptives_par_classe.csv
+!data/variabilite_comportements.csv
+!data/model_coefficients.csv
+!data/rapport_analyse.txt
+!data/top_20_adresses_conso.csv
 !data/METADATA.json
 
 # Cache
@@ -48,4 +56,3 @@ Thumbs.db
 .env
 .env.local
 .venv
-*.csv
