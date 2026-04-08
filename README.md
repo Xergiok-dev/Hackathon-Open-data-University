@@ -222,31 +222,137 @@ venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 ```
 
-### **Lancer le pipeline**
+### **Lancer le pipeline COMPLET**
+
+**Option 1: Pipeline principal SEULEMENT**
 ```bash
 python dpe_pipeline.py
 ```
+**Durée:** ~30 min (1er lancement), ~5 min après
 
-**Résultats produits:**
-- `data/enedis_geocoded.csv` - Enedis + coordonnées
-- `data/dpe_geocoded.csv` - DPE + coordonnées
-- `data/dpe_enedis_joined.csv` - Données jointes finales
-- `data/gains_par_classe.csv` - Gains de rénovation estimés
-- `docs/index.html` - Carte interactive Plotly
-- `data/dpe_kepler.csv` - Format optimisé pour Kepler.gl
+**Option 2: Pipeline + Analyses avancées**
+```bash
+python dpe_pipeline.py
+python advanced_analysis.py
+```
+**Durée:** ~45 min total
+**Génère:** Statistiques ML, prédictions, graphiques
+
+**Option 3: Pipeline + Analyses + Exploration interactive**
+```bash
+python dpe_pipeline.py
+python advanced_analysis.py
+python explore_data.py
+```
+**Durée:** ~50 min total
+**Génère:** Cartes Plotly interactives HTML
+
+### **Résultats produits**
+
+**Après `dpe_pipeline.py`:**
+```
+data/
+├── enedis_geocoded.csv             # Enedis + coordonnées
+├── dpe_geocoded.csv                # DPE + coordonnées
+├── dpe_enedis_joined.csv           # DONNÉES FINALES (2,310 lignes)
+├── gains_par_classe.csv            # Gains rénovation
+├── dpe_kepler.csv                  # Format optimisé Kepler.gl
+└── METADATA.json                   # Métadonnées
+
+docs/
+└── index.html                      # Carte Plotly animée
+```
+
+**Après `advanced_analysis.py`:**
+```
+data/
+├── stats_descriptives_par_classe.csv    # Min/max/médiane/std
+├── variabilite_comportements.csv        # Écart-types résidus
+├── gains_par_usage.csv                  # Breakdown chauffage/ECS/éclairage
+├── model_coefficients.csv               # Coefficients ML
+└── rapport_analyse.txt                  # Rapport synthétique complet
+
+docs/
+└── analyses_avancees.png               # 6 graphiques PNG
+```
+
+**Après `explore_data.py`:**
+```
+docs/
+├── 01_carte_classes_dpe.html           # Carte classes A-G
+├── 02_carte_consommation.html          # Heatmap consommation
+├── 03_carte_ecarts.html                # Écarts DPE vs réalité
+├── 04_distribution_par_classe.html     # Boxplots par classe
+├── 05_evolution_temporelle.html        # Tendance 2018-2024
+└── analyses_avancees.png               # Graphiques synthétiques
+
+data/
+└── top_20_adresses_conso.csv           # Top consommateurs
+```
 
 ### **Visualiser les résultats**
 
-**Option 1: Carte locale**
+**Option 1: Cartes locales (HTML)**
 ```bash
-open docs/index.html
+# Ouvre dans navigateur:
+cd docs/
+# Double-clique sur: 01_carte_classes_dpe.html
+# Ou ouvre directement: file:///path/hackahton/docs/01_carte_classes_dpe.html
 ```
 
 **Option 2: Kepler.gl cloud**
 1. Allez sur https://kepler.gl
-2. Drag & drop `data/dpe_kepler.csv` ou `data/dpe_enedis_joined.csv`
+2. Drag & drop `data/dpe_enedis_joined.csv` ou `data/dpe_kepler.csv`
 3. Customisez les couches et couleurs
 4. Partagez via le lien public
+
+**Option 3: Rapport texte complet**
+```bash
+# Lire le rapport d'analyse:
+cat data/rapport_analyse.txt
+# Ou ouvrir dans éditeur: data/rapport_analyse.txt
+```
+
+**Option 4: Exploration Python**
+```bash
+python explore_data.py
+# Génère statistiques + cartes interactives
+```
+
+---
+
+## ⚡ Démarrage rapide
+
+### **Les 3 façons de lancer le projet**
+
+**🟢 Mode RAPIDE (5 min) - Juste les données finales**
+```bash
+python dpe_pipeline.py
+# ✓ Crée: dpe_enedis_joined.csv + 1 carte HTML
+```
+
+**🟡 Mode STANDARD (45 min) - Données + Analyses (RECOMMANDÉ)**
+```bash
+python dpe_pipeline.py
+python advanced_analysis.py
+python explore_data.py
+# ✓ Crée: Tous les fichiers CSV + 5 cartes HTML + 6 graphiques PNG + rapport TXT
+```
+
+**🔵 Mode MANUEL (Python interactif)**
+```python
+import pandas as pd
+df = pd.read_csv("data/dpe_enedis_joined.csv")
+print(f"Nombre de lignes: {len(df)}")
+print(df[['classe_dpe_modale', 'conso_kwh', 'lat', 'lon']].head(10))
+df.to_json("export.json", orient="records", force_ascii=False)
+```
+
+### **Uploader directement à Kepler.gl**
+1. Ouvrez https://kepler.gl
+2. Drag & drop `data/dpe_enedis_joined.csv`
+3. Colorez par `classe_dpe_modale` (classe DPE)
+4. Filtrez par année si besoin
 
 ---
 
@@ -254,24 +360,141 @@ open docs/index.html
 
 ```
 hackahton/
-├── dpe_pipeline.py           # Script principal pipeline
-├── requirements.txt          # Dépendances Python
-├── README.md                 # Cette doc
+├── dpe_pipeline.py                 # Script principal pipeline (7 étapes)
+├── advanced_analysis.py            # Analyses ML + statistiques avancées
+├── explore_data.py                 # Exploration interactive + cartes Plotly
+├── requirements.txt                # Dépendances Python
+├── README.md                       # Cette documentation
+├── .gitignore                      # Fichiers à ne pas pusher
+│
 ├── data/
-│   ├── enedis_conso.csv      # Source Enedis (522k lignes)
-│   ├── dpe_75_92.csv         # Cache DPE API
-│   ├── enedis_geocoded.csv   # Enedis + lat/lon/ban_id
-│   ├── dpe_geocoded.csv      # DPE + lat/lon/ban_id
-│   ├── dpe_enedis_joined.csv # RÉSULTAT FINAL (2310 lignes)
-│   ├── gains_par_classe.csv  # Gains rénovation
-│   └── dpe_kepler.csv        # Format Kepler.gl
+│   ├── enedis_conso.csv            # Source: Enedis 522k lignes
+│   ├── dpe_75_92.csv               # Cache: DPE API ADEME
+│   ├── enedis_geocoded.csv         # Enedis + lat/lon/ban_id
+│   ├── dpe_geocoded.csv            # DPE + lat/lon/ban_id
+│   ├── dpe_enedis_joined.csv       # ⭐ RÉSULTAT FINAL (2310 lignes)
+│   ├── gains_par_classe.csv        # Gains rénovation E→D, F→E...
+│   ├── dpe_kepler.csv              # Format Kepler.gl optimisé
+│   ├── METADATA.json               # Métadonnées data.gouv.fr
+│   │
+│   ├── stats_descriptives_par_classe.csv
+│   ├── variabilite_comportements.csv
+│   ├── gains_par_usage.csv
+│   ├── model_coefficients.csv
+│   ├── rapport_analyse.txt
+│   └── top_20_adresses_conso.csv
+│
 └── docs/
-    └── index.html            # Carte interactive (GitHub Pages)
+    ├── index.html                  # Carte animée (pipeline principal)
+    ├── 01_carte_classes_dpe.html   # Carte classes A-G interactives
+    ├── 02_carte_consommation.html  # Heatmap consommation
+    ├── 03_carte_ecarts.html        # Écarts DPE vs réalité
+    ├── 04_distribution_par_classe.html
+    ├── 05_evolution_temporelle.html
+    └── analyses_avancees.png       # 6 graphiques synthétiques
+```
+
+### **Fichiers clés**
+
+| Fichier | Contenu | Taille | Utilité |
+|---------|---------|--------|---------|
+| `dpe_enedis_joined.csv` | 2,310 lignes jointes | ~2-5 MB | **Données principales à analyser** |
+| `gains_par_classe.csv` | Gains E→D, F→E... | <1 KB | Réponse à Q1 (gains rénovation) |
+| `rapport_analyse.txt` | Rapport complet | ~10 KB | Documentation complète |
+| `01-05_*.html` | Cartes interactives | ~500 KB | Visualisations Kepler.gl-style |
+| `model_coefficients.csv` | Régression ML | <1 KB | Modèle prédictif DPE |
+
+---
+
+## 🛠️ Scripts disponibles
+
+### **1. `dpe_pipeline.py` - Pipeline principal** ⭐
+
+**Qu'est-ce qu'il fait:**
+- Charge 522k adresses Enedis
+- Télécharge 727 DPE via API ADEME
+- Géocode 77k adresses via API BAN (avec chunking + retry)
+- **Jointure final:** 2,310 lignes (338 adresses uniques)
+- Calcule gains rénovation et écarts DPE vs réalité
+- Crée carte Plotly animée (2018-2024)
+
+**Durée:** ~30 min (1er lancement), ~5 min après (cache)
+
+**Résultats:**
+```
+✓ data/dpe_enedis_joined.csv (données finales)
+✓ data/gains_par_classe.csv
+✓ docs/index.html (carte animée)
+```
+
+**Lancer:**
+```bash
+python dpe_pipeline.py
 ```
 
 ---
 
-## ⚙️ Configuration & paramètres
+### **2. `advanced_analysis.py` - Analyses statistiques & ML** 📊
+
+**Qu'est-ce qu'il fait:**
+- Statistiques descriptives par classe DPE
+- Analyse de la variabilité (comportements + facteurs non-DPE)
+- Breakdown des gains par usage (chauffage 70%, ECS 15%, éclairage 10%)
+- **Modèle prédictif:** Régression linéaire (DPE → conso réelle)
+- Crée 6 graphiques avancés (boxplots, heatmaps, résidus)
+- Génère rapport synthétique complet
+
+**Durée:** ~15 min
+
+**Résultats:**
+```
+✓ data/stats_descriptives_par_classe.csv
+✓ data/variabilite_comportements.csv
+✓ data/gains_par_usage.csv
+✓ data/model_coefficients.csv
+✓ data/rapport_analyse.txt (rapport complet)
+✓ docs/analyses_avancees.png (6 graphiques)
+```
+
+**Lancer après pipeline:**
+```bash
+python advanced_analysis.py
+```
+
+---
+
+### **3. `explore_data.py` - Visualisations interactives Plotly** 🗺️
+
+**Qu'est-ce qu'il fait:**
+- Crée 5 cartes interactives HTML (Plotly)
+- Carte 1: Classes DPE (A-G couleurs)
+- Carte 2: Heatmap consommation
+- Carte 3: Écarts DPE vs réalité
+- Graphique 4: Boxplots distribution par classe
+- Graphique 5: Évolution temporelle 2018-2024
+- Export top 20 adresses consommatrices
+- Affiche statistiques globales
+
+**Durée:** ~5 min
+
+**Résultats:**
+```
+✓ docs/01_carte_classes_dpe.html
+✓ docs/02_carte_consommation.html
+✓ docs/03_carte_ecarts.html
+✓ docs/04_distribution_par_classe.html
+✓ docs/05_evolution_temporelle.html
+✓ data/top_20_adresses_conso.csv
+```
+
+**Lancer après analyses:**
+```bash
+python explore_data.py
+```
+
+---
+
+## ⚡ Raccourcis rapides
 
 ### **Tuning performance**
 
