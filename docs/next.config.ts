@@ -1,9 +1,10 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
   output: 'export',
-  // Remplacez 'nom-du-repo' par le nom de votre projet GitHub
-  basePath: '/Hackathon-Open-data-University', 
-  // Permet de gérer les images correctement sans serveur d'optimisation
+  // Si ton site est sur https://ton-nom.github.io/mon-repo/
+  // décommente la ligne suivante et remplace 'mon-repo' :
+  basePath: '/Hackathon-Open-data-University',
   images: {
     unoptimized: true,
   },

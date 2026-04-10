@@ -1,0 +1,24 @@
+steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: 'npm'
+          # On cherche le package-lock dans le dossier docs
+          cache-dependency-path: ./docs/package-lock.json 
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./docs # Indique où est le package.json
+
+      - name: Build with Next.js
+        run: npm run build
+        working-directory: ./docs
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # On envoie le dossier 'out' qui est à l'intérieur de 'docs'
+          path: ./docs/out
