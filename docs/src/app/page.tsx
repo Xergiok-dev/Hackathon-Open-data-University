@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { DPERecord, TopAdresse, LayerMode } from "@/types";
-import { loadMainData, loadTopAdresses, computeKPIs } from "@/lib/data";
+import type { DPERecord, TopAdresse, GainParClasse, Variabilite, LayerMode, KPIPanel } from "@/types";
+import { loadMainData, loadTopAdresses, loadGainsParClasse, loadVariabilite, computeKPIs } from "@/lib/data";
 import KPIBar from "@/components/KPIBar";
+import KPIDetailPanel from "@/components/KPIDetailPanel";
 import MapView from "@/components/MapView";
 import MapControls from "@/components/MapControls";
 import Sidebar from "@/components/Sidebar";
@@ -11,17 +12,25 @@ import Sidebar from "@/components/Sidebar";
 export default function Dashboard() {
   const [data, setData] = useState<DPERecord[]>([]);
   const [topAdresses, setTopAdresses] = useState<TopAdresse[]>([]);
+  const [gains, setGains] = useState<GainParClasse[]>([]);
+  const [variabilite, setVariabilite] = useState<Variabilite[]>([]);
   const [layerMode, setLayerMode] = useState<LayerMode>("dpe_classes");
+  const [activePanel, setActivePanel] = useState<KPIPanel>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([loadMainData(), loadTopAdresses()]).then(
-      ([main, top]) => {
-        setData(main);
-        setTopAdresses(top);
-        setLoading(false);
-      }
-    );
+    Promise.all([
+      loadMainData(),
+      loadTopAdresses(),
+      loadGainsParClasse(),
+      loadVariabilite(),
+    ]).then(([main, top, g, v]) => {
+      setData(main);
+      setTopAdresses(top);
+      setGains(g);
+      setVariabilite(v);
+      setLoading(false);
+    });
   }, []);
 
   const kpis = data.length > 0
@@ -56,8 +65,16 @@ export default function Dashboard() {
             {data.length.toLocaleString("fr-FR")} enregistrements | 2018-2024
           </div>
         </div>
-        <KPIBar kpis={kpis} />
+        <KPIBar kpis={kpis} activePanel={activePanel} onTogglePanel={setActivePanel} />
       </header>
+
+      {/* Expandable KPI detail panels */}
+      <KPIDetailPanel
+        panel={activePanel}
+        data={data}
+        gains={gains}
+        variabilite={variabilite}
+      />
 
       {/* Main content: Map + Sidebar */}
       <div className="flex-1 flex min-h-0">

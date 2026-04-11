@@ -1,5 +1,5 @@
 import Papa from "papaparse";
-import type { DPERecord, TopAdresse, StatsParClasse, GainParClasse } from "@/types";
+import type { DPERecord, TopAdresse, StatsParClasse, GainParClasse, Variabilite } from "@/types";
 
 const basePath = '/Hackathon-Open-data-University';
 
@@ -28,6 +28,10 @@ export async function loadStatsParClasse(): Promise<StatsParClasse[]> {
 
 export async function loadGainsParClasse(): Promise<GainParClasse[]> {
   return fetchCSV<GainParClasse>(`${basePath}/data/gains_par_classe.csv`);
+}
+
+export async function loadVariabilite(): Promise<Variabilite[]> {
+  return fetchCSV<Variabilite>(`${basePath}/data/variabilite_comportements.csv`);
 }
 
 // Compute global KPIs from the main dataset

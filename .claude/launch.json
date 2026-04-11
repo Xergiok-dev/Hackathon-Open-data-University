@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Next.js Dashboard (dev)",
+      "runtimeExecutable": "/opt/homebrew/bin/npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "Next.js Dashboard (prod)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start"],
+      "port": 3000
+    },
+    {
+      "name": "Pipeline DPE (Python)",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["dpe_pipeline.py"],
+      "port": 0
+    }
+  ]
+}

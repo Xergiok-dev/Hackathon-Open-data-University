@@ -49,6 +49,18 @@ export interface TopAdresse {
   lon: number;
 }
 
+export interface Variabilite {
+  classe_dpe: string;
+  n_logements: number;
+  "ecart_moyen_%": number;
+  "ecart_std_%": number;
+  "ecart_min_%": number;
+  "ecart_max_%": number;
+  "cv_%": number;
+}
+
+export type KPIPanel = "addresses" | "ecarts" | "gains" | null;
+
 export type LayerMode = "dpe_classes" | "heatmap" | "ecarts";
 
 export type DPEClass = "A" | "B" | "C" | "D" | "E" | "F" | "G";
